@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import "./App.css";
+// import { API_URL } from './api';
 
 import SearchIcon from "./search.svg";
 import MovieCards from "./movie/MovieCards";
 
 
-
-const API_URL = "http://www.omdbapi.com?apikey=8a4e341";
+const API_URL = process.env.REACT_APP_API_URL
 
 
  const App = () => {
@@ -25,14 +25,17 @@ const API_URL = "http://www.omdbapi.com?apikey=8a4e341";
         }
 
     }, []) // so it will only render 1x
+    const searchMovies = async (title) => {
+        try {
+            const response = await fetch(`${API_URL}&s=${title}`);
+            const data = await response.json();
+            setMovies(data.Search);
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    };
+    
 
-    const searchMovies = async(title) => {
-        const response = await fetch(`${API_URL}&s=${title}`);
-
-        const data = await response.json();
-
-        setMovies(data.Search)
-    }
 
     const handleSearch = (e) => {
         setSearch(e.target.value);
@@ -61,8 +64,8 @@ const API_URL = "http://www.omdbapi.com?apikey=8a4e341";
         </div>
         {movies?.length > 0 ? (
             <div className="container">
-                {movies.map((movie) => (
-                    <MovieCards movie={movie} />
+                {movies.map((movie, index) => (
+                    <MovieCards key={index} movie={movie} />
                 ))}
             </div>
         ): 
